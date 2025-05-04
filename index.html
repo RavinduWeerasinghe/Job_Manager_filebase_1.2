@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Manager</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    .card { border: 1px solid #ccc; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
+    .card h3 { margin: 0; }
+    .btn { padding: 8px 12px; margin-top: 5px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
+    .btn:hover { background: #0056b3; }
+    input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Job Manager</h1>
+
+  <h2>Add Customer</h2>
+  <input type="text" id="customerName" placeholder="Customer Name" />
+  <button class="btn" onclick="addCustomer()">Add Customer</button>
+
+  <div id="customers"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvXChE1Tl8bCzRCUBVFHSq8OFMVe7XIdI",
+      authDomain: "test-01-e57dd.firebaseapp.com",
+      projectId: "test-01-e57dd",
+      storageBucket: "test-01-e57dd.firebasestorage.app",
+      messagingSenderId: "882130292234",
+      appId: "1:882130292234:web:a7edf8d4a8653ea51559f3",
+      measurementId: "G-QS8X1DPCPX"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function addCustomer() {
+      const name = document.getElementById("customerName").value.trim();
+      if (name) {
+        const newRef = db.ref("customers").push();
+        newRef.set({ name });
+        document.getElementById("customerName").value = "";
+      }
+    }
+
+    function loadCustomers() {
+      db.ref("customers").on("value", snapshot => {
+        const customersDiv = document.getElementById("customers");
+        customersDiv.innerHTML = "";
+        snapshot.forEach(child => {
+          const data = child.val();
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `<h3>${data.name}</h3>`;
+          customersDiv.appendChild(card);
+        });
+      });
+    }
+
+    loadCustomers();
+  </script>
+</body>
+</html>
